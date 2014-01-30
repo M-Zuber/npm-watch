@@ -1,0 +1,42 @@
+{
+  "name": "npm-watch",
+  "version": "0.0.0",
+  "description": "run scripts from package.json when files change",
+  "main": "index.js",
+  "dependencies": {
+    "through2": "~0.4.1",
+    "nodemon": "~1.0.14"
+  },
+  "devDependencies": {
+    "tape": "~2.3.2",
+    "markdown-code-blocks": "0.0.1"
+  },
+  "bin": "./cli.js",
+  "scripts": {
+    "test": "tape test/*.js",
+    "demo": "markdown-code-blocks -t bash < README.md"
+  },
+  "watch": {
+    "test": [
+      "watch-package.js",
+      "test/*.js"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/grncdr/npm-watch.git"
+  },
+  "bugs": {
+    "type": "git",
+    "url": "git://github.com/grncdr/npm-watch/issues"
+  },
+  "homepage": "https://github.com/grncdr/npm-watch",
+  "keywords": [
+    "npm",
+    "watch",
+    "nodemon",
+    "monitor"
+  ],
+  "author": "Stephen Sugden <me@stephensugden.com>",
+  "license": "MIT"
+}
