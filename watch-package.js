@@ -1,9 +1,15 @@
+'use strict';
+
+var path = require('path')
 var spawn = require('child_process').spawn
 
 var through = require('through2')
 
+var npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+var nodemon = process.platform === 'win32' ? 'nodemon.cmd' : 'nodemon';
+
 module.exports = function watchPackage (pkgDir, exit) {
-  var pkg = require(pkgDir + '/package.json')
+  var pkg = require(path.join(pkgDir, 'package.json'))
   var processes = {}
 
   if (typeof pkg.watch !== 'object') {
@@ -15,12 +21,12 @@ module.exports = function watchPackage (pkgDir, exit) {
     line = line.toString()
     var match = line.match(/^rs\s+(\w+)/)
     if (!match) {
-      console.log("Unrecognized input:", line)
+      console.log('Unrecognized input:', line)
       return callback()
     }
     var proc = processes[match[1]]
     if (!proc) {
-      console.log("Couldn't find process:", match[1])
+      console.log('Couldn\'t find process:', match[1])
       return callback()
     }
     proc.stdin.write('rs\n')
@@ -34,14 +40,14 @@ module.exports = function watchPackage (pkgDir, exit) {
     if (!pkg.scripts[script]) {
       die('No such script "' + script + '"', 2)
     }
-    var exec = ['npm', 'run', script].join(' ')
+    var exec = [npm, 'run', script].join(' ')
     var patterns = [].concat(pkg.watch[script]).map(function (pattern) {
       return ['--watch', pattern]
     }).reduce(function (a, b) {
       return a.concat(b)
     })
     var args = patterns.concat(['--exec', exec])
-    var proc = processes[script] = spawn('nodemon', args, {
+    var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,
       cwd: pkgDir,
       stdio: 'pipe'
@@ -70,4 +76,3 @@ function prefixer (prefix) {
     callback()
   })
 }
-
