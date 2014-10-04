@@ -3,10 +3,9 @@
 var path = require('path')
 
 var windows = process.platform === 'win32'
-var pathVar = (windows && !('PATH' in process.env)) ? 'Path' : 'PATH'
-var pathSep = windows ? ';' : ':'
+var pathVarName = (windows && !('PATH' in process.env)) ? 'Path' : 'PATH'
 
-process.env[pathVar] += pathSep + path.join(__dirname, 'node_modules', '.bin')
+process.env[pathVarName] += path.delimiter + path.join(__dirname, 'node_modules', '.bin')
 
 var watchPackage = require('./watch-package')
 
