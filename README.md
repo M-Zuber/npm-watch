@@ -26,6 +26,22 @@ your `"scripts"`:
 The keys of the `"watch"` config should match the names of your `"scripts"`, and
 the values should be a glob pattern or array of glob patterns to watch.
 
+If you need to watch files with extensions other than those that `nodemon` watches [by default](https://github.com/remy/nodemon#specifying-extension-watch-list) (`.js`, `.coffee`, `.litcoffee`), you can set the value to an object with `patterns` and `extensions` keys:
+
+```javascript
+{
+  "watch": {
+    "test": {
+      "patterns": ["src", "test"],
+      "extensions": "js,jsx"
+    }
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  }
+}
+```
+
 Start the watcher with `npm run watch` in a terminal, then edit some files:
 
 ```bash
