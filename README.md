@@ -71,6 +71,9 @@ Tests run *perfectly*, ship it to the enterprise!
 This module does very little but run [`nodemon`](http://npm.im/nodemon) for you, all
 credit for the reliable file watching and process restarting should go to there.
 
+## Gotchas
+Because `npm-watch` proxies nodemon, you may be limited on the file extensions you are able to watch.  Take a look [here in the nodemon docs](https://github.com/remy/nodemon#specifying-extension-watch-list) to see what file extensions are supported.
+
 ## License
 
 MIT
