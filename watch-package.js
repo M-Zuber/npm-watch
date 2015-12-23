@@ -41,12 +41,26 @@ module.exports = function watchPackage (pkgDir, exit) {
       die('No such script "' + script + '"', 2)
     }
     var exec = [npm, 'run', script].join(' ')
-    var patterns = [].concat(pkg.watch[script]).map(function (pattern) {
+    var patterns = null
+    var extensions = null
+
+    if (typeof pkg.watch[script] === 'object' && !Array.isArray(pkg.watch[script])) {
+      patterns = pkg.watch[script].patterns
+      extensions = pkg.watch[script].extensions
+    } else {
+      patterns = pkg.watch[script]
+    }
+
+    patterns = [].concat(patterns).map(function (pattern) {
       return ['--watch', pattern]
     }).reduce(function (a, b) {
       return a.concat(b)
     })
-    var args = patterns.concat(['--exec', exec])
+
+    var args = extensions ? ['--ext', extensions] : []
+    args = args.concat(patterns)
+    args = args.concat(['--exec', exec])
+    console.log(args);
     var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,
       cwd: pkgDir,
