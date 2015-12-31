@@ -1,6 +1,6 @@
 {
   "name": "npm-watch",
-  "version": "0.0.2",
+  "version": "0.0.3-pre",
   "description": "run scripts from package.json when files change",
   "main": "index.js",
   "dependencies": {
