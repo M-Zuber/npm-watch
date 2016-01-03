@@ -14,13 +14,19 @@
   "bin": "./cli.js",
   "scripts": {
     "test": "tape test/*.js",
-    "demo": "markdown-code-blocks -t bash < README.md"
+    "demo": "markdown-code-blocks -t bash < README.md",
+    "exclusions": "bash -c echo 'An extension'"
   },
   "watch": {
     "test": [
       "watch-package.js",
       "test/*.js"
-    ]
+    ],
+    "exclusions": {
+      "patterns": "*",
+      "extensions": "nothing",
+      "ignore": "ignored.js"
+    }
   },
   "repository": {
     "type": "git",
