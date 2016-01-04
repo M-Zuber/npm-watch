@@ -43,10 +43,12 @@ module.exports = function watchPackage (pkgDir, exit) {
     var exec = [npm, 'run', script].join(' ')
     var patterns = null
     var extensions = null
+    var ignores = null
 
     if (typeof pkg.watch[script] === 'object' && !Array.isArray(pkg.watch[script])) {
       patterns = pkg.watch[script].patterns
       extensions = pkg.watch[script].extensions
+      ignores = pkg.watch[script].ignore
     } else {
       patterns = pkg.watch[script]
     }
@@ -57,8 +59,17 @@ module.exports = function watchPackage (pkgDir, exit) {
       return a.concat(b)
     })
 
+    if (ignores) {
+      ignores = [].concat(ignores).map(function (ignore) {
+        return ['--ignore', ignore]
+      }).reduce(function (a, b) {
+        return a.concat(b)
+      })
+    }
+
     var args = extensions ? ['--ext', extensions] : []
     args = args.concat(patterns)
+    if (ignores) { args = args.concat(ignores) }
     args = args.concat(['--exec', exec])
     console.log(args);
     var proc = processes[script] = spawn(nodemon, args, {
