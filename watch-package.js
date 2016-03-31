@@ -71,7 +71,6 @@ module.exports = function watchPackage (pkgDir, exit) {
     args = args.concat(patterns)
     if (ignores) { args = args.concat(ignores) }
     args = args.concat(['--exec', exec])
-    console.log(args);
     var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,
       cwd: pkgDir,
