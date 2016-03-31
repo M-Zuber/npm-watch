@@ -26,3 +26,6 @@ Temporary Items
 
 # Dependencies
 node_modules
+
+#vs vnext files
+.vs/
