@@ -8,14 +8,16 @@
     "through2": "^2.0.0"
   },
   "devDependencies": {
-    "tape": "~2.3.2",
-    "markdown-code-blocks": "0.0.1"
+    "crlf": "^1.1.0",
+    "markdown-code-blocks": "0.0.1",
+    "tape": "~2.3.2"
   },
   "bin": "./cli.js",
   "scripts": {
     "test": "tape test/*.js",
     "demo": "markdown-code-blocks -t bash < README.md",
-    "exclusions": "bash -c echo 'An extension'"
+    "exclusions": "bash -c echo 'An extension'",
+	"prepublish": "crlf --set=LF cli.js watch-package.js"
   },
   "watch": {
     "test": [
