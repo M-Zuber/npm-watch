@@ -1,6 +1,6 @@
 {
   "name": "npm-watch",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "run scripts from package.json when files change",
   "main": "index.js",
   "dependencies": {
@@ -17,7 +17,7 @@
     "test": "tape test/*.js",
     "demo": "markdown-code-blocks -t bash < README.md",
     "exclusions": "bash -c echo 'An extension'",
-	"prepublish": "crlf --set=LF cli.js watch-package.js"
+    "prepublish": "crlf --set=LF cli.js watch-package.js"
   },
   "watch": {
     "test": [
