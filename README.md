@@ -35,7 +35,7 @@ If you need to watch files with extensions other than those that `nodemon` watch
       "patterns": ["src", "test"],
       "extensions": "js,jsx",
       "ignore": "src/vendor/external.min.js",
-      "quiet": "true"
+      "quiet": true
     }
   },
   "scripts": {
