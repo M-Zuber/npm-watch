@@ -44,11 +44,13 @@ module.exports = function watchPackage (pkgDir, exit) {
     var patterns = null
     var extensions = null
     var ignores = null
+    var quiet = null
 
     if (typeof pkg.watch[script] === 'object' && !Array.isArray(pkg.watch[script])) {
       patterns = pkg.watch[script].patterns
       extensions = pkg.watch[script].extensions
       ignores = pkg.watch[script].ignore
+      quiet = pkg.watch[script].quiet
     } else {
       patterns = pkg.watch[script]
     }
@@ -76,8 +78,13 @@ module.exports = function watchPackage (pkgDir, exit) {
       cwd: pkgDir,
       stdio: 'pipe'
     })
-    proc.stdout.pipe(prefixer('[' + script + ']')).pipe(stdin.stdout)
-    proc.stderr.pipe(prefixer('[' + script + ']')).pipe(stdin.stderr)
+    if (quiet === 'true') {
+      proc.stdout.pipe(stdin.stdout)
+      proc.stderr.pipe(stdin.stderr)
+    } else {
+      proc.stdout.pipe(prefixer('[' + script + ']')).pipe(stdin.stdout)
+      proc.stderr.pipe(prefixer('[' + script + ']')).pipe(stdin.stderr)
+    }
   })
 
   return stdin
