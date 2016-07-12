@@ -78,7 +78,7 @@ module.exports = function watchPackage (pkgDir, exit) {
       cwd: pkgDir,
       stdio: 'pipe'
     })
-    if (quiet === 'true') {
+    if (quiet === true) {
       proc.stdout.pipe(stdin.stdout)
       proc.stderr.pipe(stdin.stderr)
     } else {
