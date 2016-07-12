@@ -27,6 +27,7 @@ The keys of the `"watch"` config should match the names of your `"scripts"`, and
 the values should be a glob pattern or array of glob patterns to watch.
 
 If you need to watch files with extensions other than those that `nodemon` watches [by default](https://github.com/remy/nodemon#specifying-extension-watch-list) (`.js`, `.coffee`, `.litcoffee`), you can set the value to an object with `patterns` and `extensions` keys. You can also add an `ignore` key (a list or a string) to ignore specific files. Finally, you can add a `quiet` flag to hide the script name in any output on stdout or stderr.
+> The `quiet` flag was changed from a `string` to a `boolean` in `0.1.5`. Backwards compatability will be kept for two patch versions.
 
 ```javascript
 {
