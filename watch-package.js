@@ -78,7 +78,7 @@ module.exports = function watchPackage (pkgDir, exit) {
     var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,
       cwd: pkgDir,
-      stdio: inherit === true? 'inherit' : 'pipe'
+      stdio: inherit === true? ['pipe', 'inherit', 'pipe']: 'pipe'
     })
     if (inherit === true) return;
     if (quiet === true || quiet === 'true') {
