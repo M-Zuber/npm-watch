@@ -45,12 +45,14 @@ module.exports = function watchPackage (pkgDir, exit) {
     var extensions = null
     var ignores = null
     var quiet = null
+    var inherit = null
 
     if (typeof pkg.watch[script] === 'object' && !Array.isArray(pkg.watch[script])) {
       patterns = pkg.watch[script].patterns
       extensions = pkg.watch[script].extensions
       ignores = pkg.watch[script].ignore
       quiet = pkg.watch[script].quiet
+      inherit = pkg.watch[script].inherit
     } else {
       patterns = pkg.watch[script]
     }
@@ -76,8 +78,9 @@ module.exports = function watchPackage (pkgDir, exit) {
     var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,
       cwd: pkgDir,
-      stdio: 'pipe'
+      stdio: inherit === true? ['pipe', 'inherit', 'pipe']: 'pipe'
     })
+    if (inherit === true) return;
     if (quiet === true || quiet === 'true') {
       proc.stdout.pipe(stdin.stdout)
       proc.stderr.pipe(stdin.stderr)
