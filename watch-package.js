@@ -72,14 +72,17 @@ module.exports = function watchPackage (pkgDir, exit) {
     }
 
     var args = extensions ? ['--ext', extensions] : []
+    var isWin = process.platform.substr(0,3) == 'win';
     args = args.concat(patterns)
     if (ignores) { args = args.concat(ignores) }
     args = args.concat(['--exec', exec])
-    var proc = processes[script] = spawn(nodemon, args, {
-      env: process.env,
-      cwd: pkgDir,
-      stdio: inherit === true? ['pipe', 'inherit', 'pipe']: 'pipe'
-    })
+    var opts = { env:process.env, cwd:pkgDir };
+    if (inherit !== true) opts.stdio = 'pipe';
+    else {
+      if (isWin) opts.customFds = [0,1,2];
+      else opts.stdio = 'inherit';
+    }
+    var proc = processes[script] = spawn(nodemon, args, opts)
     if (inherit === true) return;
     if (quiet === true || quiet === 'true') {
       proc.stdout.pipe(stdin.stdout)
