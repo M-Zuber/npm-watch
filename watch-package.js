@@ -8,7 +8,7 @@ var through = require('through2')
 var npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 var nodemon = process.platform === 'win32' ? 'nodemon.cmd' : 'nodemon';
 
-module.exports = function watchPackage (pkgDir, exit) {
+module.exports = function watchPackage(pkgDir, exit) {
   var pkg = require(path.join(pkgDir, 'package.json'))
   var processes = {}
 
@@ -78,7 +78,7 @@ module.exports = function watchPackage (pkgDir, exit) {
     var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,
       cwd: pkgDir,
-      stdio: inherit === true? ['pipe', 'inherit', 'pipe']: 'pipe'
+      stdio: inherit === true ? ['pipe', 'inherit', 'pipe'] : 'pipe'
     })
     if (inherit === true) return;
     if (quiet === true || quiet === 'true') {
@@ -92,16 +92,19 @@ module.exports = function watchPackage (pkgDir, exit) {
 
   return stdin
 
-  function die (message, code) {
-    stdin.stderr.write(message)
-    stdin.end()
-    stdin.stderr.end()
-    stdin.stdout.end()
+  function die(message, code) {
+    process.stderr.write(message)
+
+    if (stdin) {
+      stdin.end()
+      stdin.stderr.end()
+      stdin.stdout.end()
+    }
     exit(code || 1)
   }
 }
 
-function prefixer (prefix) {
+function prefixer(prefix) {
   return through(function (line, _, callback) {
     line = line.toString()
     if (!line.match('to restart at any time')) {
