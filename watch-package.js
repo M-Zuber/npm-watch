@@ -40,7 +40,7 @@ module.exports = function watchPackage(pkgDir, exit) {
     if (!pkg.scripts[script]) {
       die('No such script "' + script + '"', 2)
     }
-    var exec = [npm, 'run', script].join(' ')
+    var exec = [npm, 'run', '-s', script].join(' ')
     var patterns = null
     var extensions = null
     var ignores = null
