@@ -108,7 +108,7 @@ function prefixer(prefix) {
   return through(function (line, _, callback) {
     line = line.toString()
     if (!line.match('to restart at any time')) {
-      this.push(prefix + ' ' + line)
+      this.push(line.replace(/^/gm, prefix + ' '))
     }
     callback()
   })
