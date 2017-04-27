@@ -16,7 +16,9 @@ module.exports = function watchPackage(_pkgDir, exit, taskName) {
   var pkg = require(path.join(pkgDir, 'package.json'))
   var processes = {}
 
-  if (typeof taskName !== 'undefined' && taskName.trim() === '') {
+  taskName = typeof taskName !== 'undefined' ? taskName.trim() : '';
+
+  if (taskName === '') {
     console.info('No task specified. Will go through all possible tasks');
   }
 
@@ -44,7 +46,7 @@ module.exports = function watchPackage(_pkgDir, exit, taskName) {
   stdin.stderr = through()
   stdin.stdout = through()
 
-  if (typeof taskName !== 'undefined' && taskName.trim() !== '') {
+  if (taskName !== '') {
     if (!pkg.scripts[taskName]) {
       die('No such script "' + taskName + '"', 2)
     }
