@@ -8,16 +8,26 @@ var through = require('through2')
 var npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 var nodemon = process.platform === 'win32' ? 'nodemon.cmd' : 'nodemon';
 
-module.exports = function watchPackage(pkgDir, exit) {
+var pkgDir = '';
+var stdin = null;
+
+module.exports = function watchPackage(_pkgDir, exit, taskName) {
+  pkgDir = _pkgDir;
   var pkg = require(path.join(pkgDir, 'package.json'))
   var processes = {}
+
+  taskName = typeof taskName !== 'undefined' ? taskName.trim() : '';
+
+  if (taskName === '') {
+    console.info('No task specified. Will go through all possible tasks');
+  }
 
   if (typeof pkg.watch !== 'object') {
     die('No "watch" config in package.json')
   }
 
   // send 'rs' commands to the right proc
-  var stdin = through(function (line, _, callback) {
+  stdin = through(function (line, _, callback) {
     line = line.toString()
     var match = line.match(/^rs\s+(\w+)/)
     if (!match) {
@@ -36,11 +46,47 @@ module.exports = function watchPackage(pkgDir, exit) {
   stdin.stderr = through()
   stdin.stdout = through()
 
+  if (taskName !== '') {
+    if (!pkg.scripts[taskName]) {
+      die('No such script "' + taskName + '"', 2)
+    }
+    startScript(taskName, pkg, processes);
+  } else {
+
   Object.keys(pkg.watch).forEach(function (script) {
     if (!pkg.scripts[script]) {
       die('No such script "' + script + '"', 2)
     }
-    var exec = [npm, 'run', '-s', script].join(' ')
+    startScript(script, pkg, processes);
+  })
+  }
+
+  return stdin
+
+  function die(message, code) {
+    process.stderr.write(message)
+
+    if (stdin) {
+      stdin.end()
+      stdin.stderr.end()
+      stdin.stdout.end()
+    }
+    exit(code || 1)
+  }
+}
+
+function prefixer(prefix) {
+  return through(function (line, _, callback) {
+    line = line.toString()
+    if (!line.match('to restart at any time')) {
+      this.push(prefix + ' ' + line)
+    }
+    callback()
+  })
+}
+
+function startScript(script, pkg, processes) {
+  var exec = [npm, 'run', '-s', script].join(' ')
     var patterns = null
     var extensions = null
     var ignores = null
@@ -88,28 +134,4 @@ module.exports = function watchPackage(pkgDir, exit) {
       proc.stdout.pipe(prefixer('[' + script + ']')).pipe(stdin.stdout)
       proc.stderr.pipe(prefixer('[' + script + ']')).pipe(stdin.stderr)
     }
-  })
-
-  return stdin
-
-  function die(message, code) {
-    process.stderr.write(message)
-
-    if (stdin) {
-      stdin.end()
-      stdin.stderr.end()
-      stdin.stdout.end()
-    }
-    exit(code || 1)
-  }
-}
-
-function prefixer(prefix) {
-  return through(function (line, _, callback) {
-    line = line.toString()
-    if (!line.match('to restart at any time')) {
-      this.push(prefix + ' ' + line)
-    }
-    callback()
-  })
 }
