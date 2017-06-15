@@ -92,6 +92,8 @@ function startScript(script, pkg, processes) {
     var ignores = null
     var quiet = null
     var inherit = null
+    var legacyWatch = null
+    var delay = null
 
     if (typeof pkg.watch[script] === 'object' && !Array.isArray(pkg.watch[script])) {
       patterns = pkg.watch[script].patterns
@@ -99,6 +101,8 @@ function startScript(script, pkg, processes) {
       ignores = pkg.watch[script].ignore
       quiet = pkg.watch[script].quiet
       inherit = pkg.watch[script].inherit
+      legacyWatch = pkg.watch[script].legacyWatch
+      delay = pkg.watch[script].delay + 'ms'
     } else {
       patterns = pkg.watch[script]
     }
@@ -120,6 +124,8 @@ function startScript(script, pkg, processes) {
     var args = extensions ? ['--ext', extensions] : []
     args = args.concat(patterns)
     if (ignores) { args = args.concat(ignores) }
+    if (legacyWatch) { args = args.concat(['--legacy-watch']) }
+    if (delay) { args = args.concat(['--delay', delay]) }
     args = args.concat(['--exec', exec])
     var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,

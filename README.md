@@ -59,7 +59,7 @@ the values should be a glob pattern or array of glob patterns to watch.
 
 Also it is now possible to obtain a second parameter to define the script which should be run for watching and not watch all possible scripts at once.
 
-If you need to watch files with extensions other than those that `nodemon` watches [by default](https://github.com/remy/nodemon#specifying-extension-watch-list) (`.js`, `.coffee`, `.litcoffee`), you can set the value to an object with `patterns` and `extensions` keys. You can also add an `ignore` key (a list or a string) to ignore specific files. Finally, you can add a `quiet` flag to hide the script name in any output on stdout or stderr, or you can use the `inherit` flag to preserve the original's process stdout or stderr.
+If you need to watch files with extensions other than those that `nodemon` watches [by default](https://github.com/remy/nodemon#specifying-extension-watch-list) (`.js`, `.coffee`, `.litcoffee`), you can set the value to an object with `patterns` and `extensions` keys. You can also add an `ignore` key (a list or a string) to ignore specific files. Finally, you can add a `quiet` flag to hide the script name in any output on stdout or stderr, or you can use the `inherit` flag to preserve the original's process stdout or stderr. You can enable `nodemon` [legacy watch](https://github.com/remy/nodemon#application-isnt-restarting) and specify the restart [delay](https://github.com/remy/nodemon#delaying-restarting) in milliseconds with the corresponding flags.
 > The `quiet` flag was changed from a `string` to a `boolean` in `0.1.5`. Backwards compatability will be kept for two patch versions.
 
 ```javascript
@@ -69,7 +69,9 @@ If you need to watch files with extensions other than those that `nodemon` watch
       "patterns": ["src", "test"],
       "extensions": "js,jsx",
       "ignore": "src/vendor/external.min.js",
-      "quiet": true
+      "quiet": true,
+      "legacyWatch": true,
+      "delay": 2500
     }
   },
   "scripts": {
