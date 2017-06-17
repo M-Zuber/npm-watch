@@ -102,7 +102,7 @@ function startScript(script, pkg, processes) {
       quiet = pkg.watch[script].quiet
       inherit = pkg.watch[script].inherit
       legacyWatch = pkg.watch[script].legacyWatch
-      delay = pkg.watch[script].delay + 'ms'
+      delay = pkg.watch[script].delay
     } else {
       patterns = pkg.watch[script]
     }
@@ -125,7 +125,7 @@ function startScript(script, pkg, processes) {
     args = args.concat(patterns)
     if (ignores) { args = args.concat(ignores) }
     if (legacyWatch) { args = args.concat(['--legacy-watch']) }
-    if (delay) { args = args.concat(['--delay', delay]) }
+    if (delay) { args = args.concat(['--delay', delay + 'ms']) }
     args = args.concat(['--exec', exec])
     var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,
