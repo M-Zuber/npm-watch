@@ -2,21 +2,24 @@
   "name": "npm-watch",
   "version": "0.2.0",
   "description": "run scripts from package.json when files change",
-  "main": "index.js",
   "dependencies": {
+    "es6-promise-try": "^1.0.2",
+    "extend": "^3.0.1",
+    "is-windows": "^1.0.1",
     "nodemon": "^1.11.0",
     "through2": "^2.0.0"
   },
   "devDependencies": {
     "crlf": "^1.1.0",
+    "in-publish": "^2.0.0",
     "markdown-code-blocks": "0.0.1",
     "tape": "~2.3.2"
   },
-  "bin": "./cli.js",
+  "bin": "lib/cli.js",
   "scripts": {
     "demo": "markdown-code-blocks -t bash < README.md",
     "exclusions": "bash -c echo 'An extension'",
-    "prepublish": "crlf --set=LF cli.js watch-package.js"
+    "prepublish": "not-in-install && crlf --set=LF lib/cli.js lib/watch-package.js || exit 0"
   },
   "watch": {
     "test": [
