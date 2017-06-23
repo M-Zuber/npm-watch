@@ -4,6 +4,8 @@
   "description": "run scripts from package.json when files change",
   "main": "index.js",
   "dependencies": {
+    "es6-promise-try": "^1.0.2",
+    "is-windows": "^1.0.1",
     "nodemon": "^1.11.0",
     "through2": "^2.0.0"
   },

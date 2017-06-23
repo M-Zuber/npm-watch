@@ -1,143 +1,163 @@
 'use strict';
+const {EventEmitter} = require('events');
+const isWindows = require('is-windows');
+const {join: joinPath} = require('path');
+const nodemon = require('nodemon');
+const promiseTry = require('es6-promise-try');
+const through = require('through2');
 
-var path = require('path')
-var spawn = require('child_process').spawn
-
-var through = require('through2')
-
-var npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-var nodemon = process.platform === 'win32' ? 'nodemon.cmd' : 'nodemon';
-
-var pkgDir = '';
-var stdin = null;
-
-module.exports = function watchPackage(_pkgDir, exit, taskName) {
-  pkgDir = _pkgDir;
-  var pkg = require(path.join(pkgDir, 'package.json'))
-  var processes = {}
-
-  taskName = typeof taskName !== 'undefined' ? taskName.trim() : '';
-
-  if (taskName === '') {
-    console.info('No task specified. Will go through all possible tasks');
-  }
-
-  if (typeof pkg.watch !== 'object') {
-    die('No "watch" config in package.json')
-  }
-
-  // send 'rs' commands to the right proc
-  stdin = through(function (line, _, callback) {
-    line = line.toString()
-    var match = line.match(/^rs\s+(\w+)/)
-    if (!match) {
-      console.log('Unrecognized input:', line)
-      return callback()
-    }
-    var proc = processes[match[1]]
-    if (!proc) {
-      console.log('Couldn\'t find process:', match[1])
-      return callback()
-    }
-    proc.stdin.write('rs\n')
-    callback()
-  })
-
-  stdin.stderr = through()
-  stdin.stdout = through()
-
-  if (taskName !== '') {
-    if (!pkg.scripts[taskName]) {
-      die('No such script "' + taskName + '"', 2)
-    }
-    startScript(taskName, pkg, processes);
-  } else {
-
-  Object.keys(pkg.watch).forEach(function (script) {
-    if (!pkg.scripts[script]) {
-      die('No such script "' + script + '"', 2)
-    }
-    startScript(script, pkg, processes);
-  })
-  }
-
-  return stdin
-
-  function die(message, code) {
-    process.stderr.write(message)
-
-    if (stdin) {
-      stdin.end()
-      stdin.stderr.end()
-      stdin.stdout.end()
-    }
-    exit(code || 1)
-  }
-}
+const npm = isWindows() ? 'npm.cmd' : 'npm';
 
 function prefixer(prefix) {
-  return through(function (line, _, callback) {
-    line = line.toString()
-    if (!line.match('to restart at any time')) {
-      this.push(prefix + ' ' + line)
+  return through((line, _, callback) => {
+    if (!line.toString().match('to restart at any time')) {
+      this.push(`${prefix} ${line}`);
     }
-    callback()
+
+    callback();
   })
 }
 
-function startScript(script, pkg, processes) {
-  var exec = [npm, 'run', '-s', script].join(' ')
-    var patterns = null
-    var extensions = null
-    var ignores = null
-    var quiet = null
-    var inherit = null
-    var legacyWatch = null
-    var delay = null
+class Watcher extends EventEmitter {
+  constructor(cfg) {
+    super();
 
-    if (typeof pkg.watch[script] === 'object' && !Array.isArray(pkg.watch[script])) {
-      patterns = pkg.watch[script].patterns
-      extensions = pkg.watch[script].extensions
-      ignores = pkg.watch[script].ignore
-      quiet = pkg.watch[script].quiet
-      inherit = pkg.watch[script].inherit
-      legacyWatch = pkg.watch[script].legacyWatch
-      delay = pkg.watch[script].delay
+    promiseTry(() => {
+      const pkg = require(joinPath(cfg.pkgDir, 'package.json'));
+
+      if (typeof pkg.watch !== 'object') {
+        throw new Error('No "watch" config in package.json');
+      }
+
+      if (typeof cfg.taskName === 'string') {
+        cfg.taskName = cfg.taskName.trim();
+      } else {
+        cfg.taskName = '';
+      }
+
+      this.cfg = cfg;
+      this.pkg = pkg;
+      this.processes = {};
+
+      this.inputListener();
+
+      return this.start();
+    }).catch(error => this.emit('error', error));
+  }
+
+  inputListener() {
+    this.stdin = through((line, _, callback) => {
+      line = line.toString();
+
+      const match = line.match(/^rs\s+(\w+)/);
+
+      if (!match) {
+        this.emit('log', `Unrecognized input: ${line}`);
+        return callback();
+      }
+
+      const nodemonProcess = this.processes[match[1]];
+
+      if (!proc) {
+        this.emit('log', `Couldn't find process: ${match[1]}`);
+        return callback();
+      }
+
+      nodemonProcess.stdin.write('rs\n');
+      callback();
+    });
+
+    this.stdin.stderr = through();
+    this.stdin.stdout = through();
+  }
+
+  quit() {
+    Object.keys(this.processes).forEach(name => {
+      this.processes[name].emit('quit');
+      this.processes[name].reset();
+    });
+
+    if (this.stdin) {
+      this.stdin.end();
+      this.stdin.stderr.end();
+      this.stdin.stdout.end();
+    }
+  }
+
+  start() {
+    let tasks;
+
+    if (this.cfg.taskName === '') {
+      this.emit('info', 'No task specified. Will go through all possible tasks');
+      tasks = Object.keys(this.pkg.watch).map(taskName => this.startTask(taskName));
     } else {
-      patterns = pkg.watch[script]
+      tasks = [ this.startTask(this.cfg.taskName) ];
     }
 
-    patterns = [].concat(patterns).map(function (pattern) {
-      return ['--watch', pattern]
-    }).reduce(function (a, b) {
-      return a.concat(b)
-    })
+    return Promise.all(tasks);
+  }
 
-    if (ignores) {
-      ignores = [].concat(ignores).map(function (ignore) {
-        return ['--ignore', ignore]
-      }).reduce(function (a, b) {
-        return a.concat(b)
-      })
-    }
+  startTask(taskName) {
+    return promiseTry(() => {
+      const task = this.pkg.watch[taskName];
 
-    var args = extensions ? ['--ext', extensions] : []
-    args = args.concat(patterns)
-    if (ignores) { args = args.concat(ignores) }
-    if (legacyWatch) { args = args.concat(['--legacy-watch']) }
-    if (delay) { args = args.concat(['--delay', delay + 'ms']) }
-    args = args.concat(['--exec', exec])
-    var proc = processes[script] = spawn(nodemon, args, {
-      env: process.env,
-      cwd: pkgDir,
-      stdio: inherit === true ? ['pipe', 'inherit', 'pipe'] : 'pipe'
-    })
-    if (inherit === true) return;
-    if (quiet === true || quiet === 'true') {
-      proc.stdout.pipe(stdin.stdout)
-      proc.stderr.pipe(stdin.stderr)
-    } else {
-      proc.stdout.pipe(prefixer('[' + script + ']')).pipe(stdin.stdout)
-      proc.stderr.pipe(prefixer('[' + script + ']')).pipe(stdin.stderr)
-    }
+      if (!task) {
+        throw new Error(`No such script "${taskName}"`);
+      }
+
+      const nodemonConfig = {};
+
+      if (typeof task === 'object' && !Array.isArray(task)) {
+        Object.assign(nodemonConfig, task);
+      /*} else if (!Array.isArray(task)) {
+        nodemonConfig.watch = [task];*/
+      } else {
+        nodemonConfig.watch = task;
+      }
+
+      if (nodemonConfig.extensions) {
+        nodemonConfig.ext = nodemonConfig.extensions;
+        delete nodemonConfig.extensions;
+      }
+
+      /*if (nodemonConfig.inherit) {
+        inherit = nodemonConfig.inherit;
+        delete nodemonConfig.inherit;
+      }*/
+
+      if (nodemonConfig.patterns) {
+        nodemonConfig.watch = nodemonConfig.patterns;
+        delete nodemonConfig.patterns;
+      }
+
+      nodemonConfig.exec = [npm, 'run', '-s', taskName].join(' ');
+      //nodemonConfig.stdout = false;
+
+      console.log(nodemonConfig)
+
+      const nodemonProcess = this.processes[taskName] = nodemon(nodemonConfig)
+        .on('readable', () => {
+          if (/*inherit || */config.quiet === true || config.quiet === 'true') {
+            //nodemonProcess.stdout.pipe(this.stdin.stdout);
+            //nodemonProcess.stderr.pipe(this.stdin.stderr);
+          } else {
+            //nodemonProcess.stdout.pipe(prefixer(`[${taskName}]`)).pipe(this.stdin.stdout);
+            //nodemonProcess.stderr.pipe(prefixer(`[${taskName}]`)).pipe(this.stdin.stderr);
+          }
+
+          this.emit('readable');
+        })
+        .on('start', () => this.emit('start'))
+        .on('exit', () => this.emit('exit'))
+        .on('crash', () => this.emit('crash'))
+        .on('restart', files => this.emit('restart', files))
+        .on('quit', () => this.emit('quit'));
+    });
+  }
 }
+
+function watchPackage(cfg) {
+  return new Watcher(cfg);
+}
+
+module.exports = watchPackage;
