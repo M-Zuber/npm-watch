@@ -31,18 +31,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/grncdr/npm-watch.git"
+    "url": "git://github.com/M-Zuber/npm-watch.git"
   },
   "bugs": {
     "type": "git",
-    "url": "git://github.com/grncdr/npm-watch/issues"
+    "url": "git://github.com/M-Zuber/npm-watch/issues"
   },
-  "homepage": "https://github.com/grncdr/npm-watch",
+  "homepage": "https://github.com/M-Zuber/npm-watch",
   "keywords": [
     "npm",
     "watch",
     "nodemon",
     "monitor"
+  ],
+  "maintainers": [
+    {
+      "name": "Mordechai Zuber",
+      "email": "mez613+npmwatch@gmail.com"
+    }
   ],
   "author": "Stephen Sugden <me@stephensugden.com>",
   "license": "MIT"
