@@ -30,7 +30,8 @@ log.info = function() {
 
 const config = {
   pkgDir: process.cwd(),
-  taskName: process.argv[2]
+  taskName: process.argv[2],
+  taskArgs: process.argv.slice(3)
 };
 
 module.exports = watchPackage(config)

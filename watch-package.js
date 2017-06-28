@@ -91,13 +91,13 @@ class Watcher extends EventEmitter {
       this.emit('info', 'No task specified. Will go through all possible tasks');
       tasks = Object.keys(this.pkg.watch).map(taskName => this.startTask(taskName));
     } else {
-      tasks = [ this.startTask(this.cfg.taskName) ];
+      tasks = [ this.startTask(this.cfg.taskName, this.cfg.taskArgs) ];
     }
 
     return Promise.all(tasks);
   }
 
-  startTask(taskName) {
+  startTask(taskName, args=[]) {
     return promiseTry(() => {
       const task = this.pkg.watch[taskName];
 
@@ -130,7 +130,11 @@ class Watcher extends EventEmitter {
         delete nodemonConfig.patterns;
       }
 
-      nodemonConfig.exec = [npm, 'run', '-s', taskName].join(' ');
+      if (args.length > 0 && args[0] !== '--') {
+        args.unshift('--');
+      }
+
+      nodemonConfig.exec = [npm, 'run', '-s', taskName].concat(args).join(' ');
       //nodemonConfig.stdout = false;
 
       console.log(nodemonConfig)
