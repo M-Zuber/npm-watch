@@ -44,6 +44,10 @@
       "ignore": "ignored.js"
     }
   },
+  "files": [
+    "cli.js",
+    "watch-package.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/M-Zuber/npm-watch.git"
