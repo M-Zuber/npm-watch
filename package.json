@@ -4,31 +4,50 @@
   "description": "run scripts from package.json when files change",
   "main": "index.js",
   "dependencies": {
+    "es6-promise-try": "^1.0.2",
+    "is-windows": "^1.0.1",
     "nodemon": "^1.11.0",
     "through2": "^2.0.0"
   },
   "devDependencies": {
+    "chai": "^4.0.2",
     "crlf": "^1.1.0",
-    "markdown-code-blocks": "0.0.1",
-    "tape": "~2.3.2"
+    "fs-extra": "^3.0.1",
+    "mocha": "^3.4.2",
+    "nyc": "^11.0.2",
+    "require-uncached": "^1.0.3"
   },
   "bin": "./cli.js",
   "scripts": {
-    "demo": "markdown-code-blocks -t bash < README.md",
-    "exclusions": "bash -c echo 'An extension'",
-    "prepublish": "crlf --set=LF cli.js watch-package.js"
+    "posttest": "nyc report --reporter=html",
+    "prepublish": "crlf --set=LF cli.js watch-package.js",
+    "test": "nyc --reporter=text-summary mocha test --timeout=3000 --check-leaks --globals=__coverage__,__core-js_shared__",
+    "test_array": "echo test_array ran",
+    "test_object": "echo test_object ran",
+    "test_string": "echo test_string ran",
+    "TEMP": "nodemon -h"
   },
   "watch": {
-    "test": [
-      "watch-package.js",
-      "test/*.js"
+    "test_array": [
+      "fixtures_temp/file.js",
+      "fixtures_temp/file.txt"
     ],
+    "test_object": {
+      "extensions": "css,js,txt",
+      "ignore": "ignored.js",
+      "patterns": "fixtures_temp/*.{js,txt}"
+    },
+    "test_string": "fixtures_temp/file.txt",
     "exclusions": {
       "patterns": "*",
       "extensions": "nothing",
       "ignore": "ignored.js"
     }
   },
+  "files": [
+    "cli.js",
+    "watch-package.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/M-Zuber/npm-watch.git"

@@ -26,6 +26,12 @@ Temporary Items
 
 # Dependencies
 node_modules
+package-lock.json
+
+# Tests
+coverage
+.nyc_output
+fixtures_temp
 
 #vs vnext files
 .vs/
