@@ -43,6 +43,9 @@
     },
     "test_string": "test/fixtures_temp/file.txt"
   },
+  "files": [
+    "lib"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/M-Zuber/npm-watch.git"
