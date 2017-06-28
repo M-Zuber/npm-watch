@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "run scripts from package.json when files change",
   "dependencies": {
+    "decache": "^4.1.0",
     "es6-promise-try": "^1.0.2",
     "extend": "^3.0.1",
     "is-windows": "^1.0.1",
@@ -10,27 +11,37 @@
     "through2": "^2.0.0"
   },
   "devDependencies": {
+    "chai": "^4.0.2",
     "crlf": "^1.1.0",
+    "decache": "^4.1.0",
+    "fs-extra": "^3.0.1",
     "in-publish": "^2.0.0",
-    "markdown-code-blocks": "0.0.1",
-    "tape": "~2.3.2"
+    "mocha": "^3.4.2",
+    "nyc": "^11.0.2"
   },
   "bin": "lib/cli.js",
   "scripts": {
-    "demo": "markdown-code-blocks -t bash < README.md",
-    "exclusions": "bash -c echo 'An extension'",
-    "prepublish": "not-in-install && crlf --set=LF lib/cli.js lib/watch-package.js || exit 0"
+    "posttest": "nyc report --reporter=html",
+    "prepublish": "not-in-install && crlf --set=LF lib/cli.js lib/watch-package.js || exit 0",
+    "test": "nyc --reporter=text-summary mocha test/ --timeout=10000 --check-leaks --globals=__coverage__,__core-js_shared__",
+    "test_array": "node test/script",
+    "test_object": "node test/script",
+    "test_string": "node test/script",
+    "TEMP": "nodemon -h"
   },
   "watch": {
-    "test": [
-      "watch-package.js",
-      "test/*.js"
+    "test_array": [
+      "test/fixtures_temp/file.js",
+      "test/fixtures_temp/file.txt"
     ],
-    "exclusions": {
-      "patterns": "*",
-      "extensions": "nothing",
-      "ignore": "ignored.js"
-    }
+    "test_object": {
+      "extensions": "css,js,txt",
+      "ignore": "ignored.js",
+      "patterns": [
+        "test/fixtures_temp/"
+      ]
+    },
+    "test_string": "test/fixtures_temp/file.txt"
   },
   "repository": {
     "type": "git",
