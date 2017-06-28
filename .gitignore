@@ -28,6 +28,11 @@ Temporary Items
 node_modules
 package-lock.json
 
+# Tests
+coverage
+.nyc_output
+fixtures_temp
+
 #vs vnext files
 .vs/
 #vs code files
