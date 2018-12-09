@@ -124,6 +124,32 @@ EOF
 
 Tests run *perfectly*, ship it to the enterprise!
 
+## Ignore files
+
+Add an `ignore` property to your `watch` object. The value of `ignore` can be a string if you only want to ignore
+a single glob:
+
+```
+"watch": {
+"build": {
+  "ignore": "build",
+  ...
+}
+```
+
+Or an array if you want to ignore multiple globs:
+
+```
+"watch": {
+"build": {
+  "ignore": [
+    "build",
+    "node_modules"
+  ],
+  ...
+}
+```
+
 ## Acknowledgements
 
 This module does very little but run [`nodemon`](http://npm.im/nodemon) for you, all
