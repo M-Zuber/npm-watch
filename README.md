@@ -131,8 +131,10 @@ a single glob:
 
 ```
 "watch": {
-"build": {
-  "ignore": "build",
+  "build": {
+    "ignore": "build",
+    ...
+  }
   ...
 }
 ```
@@ -141,11 +143,13 @@ Or an array if you want to ignore multiple globs:
 
 ```
 "watch": {
-"build": {
-  "ignore": [
-    "build",
-    "node_modules"
-  ],
+  "build": {
+    "ignore": [
+      "build",
+      "node_modules"
+    ],
+    ...
+  }
   ...
 }
 ```
