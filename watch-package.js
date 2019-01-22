@@ -95,6 +95,7 @@ function startScript(script, pkg, processes) {
     var legacyWatch = null
     var delay = null
     var verbose = null
+	  var runOnChangeOnly = null
 
     if (typeof pkg.watch[script] === 'object' && !Array.isArray(pkg.watch[script])) {
       patterns = pkg.watch[script].patterns
@@ -105,6 +106,7 @@ function startScript(script, pkg, processes) {
       legacyWatch = pkg.watch[script].legacyWatch
       delay = pkg.watch[script].delay
       verbose = pkg.watch[script].verbose
+	    runOnChangeOnly = pkg.watch[script].runOnChangeOnly
     } else {
       patterns = pkg.watch[script]
     }
@@ -129,6 +131,7 @@ function startScript(script, pkg, processes) {
     if (legacyWatch) { args = args.concat(['--legacy-watch']) }
     if (delay) { args = args.concat(['--delay', delay + 'ms']) }
     if (verbose) { args = args.concat(['-V']) }
+	  if (runOnChangeOnly) { args = args.concat(['--on-change-only']) }
     args = args.concat(['--exec', exec])
     
     var proc = processes[script] = spawn(nodemon, args, {
