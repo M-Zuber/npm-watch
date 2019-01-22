@@ -156,6 +156,10 @@ Number of milliseconds to [delay](https://github.com/remy/nodemon#delaying-resta
 
 Boolean to clear the buffer after detecting a new change
 
+#### `verbose`
+
+Boolean to turn on the nodemons verbose mode
+
 #### `Ignore files`
 
 Add an `ignore` property to your `watch` object. The value of `ignore` can be a string if you only want to ignore
