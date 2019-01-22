@@ -27,8 +27,7 @@ Possibilty to watch for different tasks
 
 ```javascript
   {
-    "watch": 
-      {
+    "watch": {
       "run_android": {
         "patterns": [
           "app"
@@ -53,8 +52,7 @@ Possibilty to watch for different tasks
   }
 ```
 
-
-The keys of the `"watch"` config should match the names of your `"scripts"`, and
+The top level keys of the `"watch"` config should match the names of your `"scripts"`, and
 the values should be a glob pattern or array of glob patterns to watch.
 
 Also it is now possible to obtain a second parameter to define the script which should be run for watching and not watch all possible scripts at once.
@@ -124,7 +122,41 @@ EOF
 
 Tests run *perfectly*, ship it to the enterprise!
 
-## Ignore files
+### Options
+
+#### `patterns`
+
+Array of paths to watch
+
+#### `extensions`
+
+Array of file extensions to watch
+
+#### `ignore`
+
+String or array of paths to ignore
+
+#### `quiet`
+
+Boolean to hide the script name in any output on stdout and stderr
+
+#### `inherit`
+
+Boolean to preserve the original process' stdout and stderr
+
+#### `legacyWatch`
+
+Boolean to enable [legacy watch](https://github.com/remy/nodemon#application-isnt-restarting)
+
+#### `delay`
+
+Number of milliseconds to [delay](https://github.com/remy/nodemon#delaying-restarting) before checking for new files
+
+#### `clearBuffer`
+
+Boolean to clear the buffer after detecting a new change
+
+#### `Ignore files`
 
 Add an `ignore` property to your `watch` object. The value of `ignore` can be a string if you only want to ignore
 a single glob:

@@ -7,6 +7,7 @@ var through = require('through2')
 
 var npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 var nodemon = process.platform === 'win32' ? 'nodemon.cmd' : 'nodemon';
+var clearCharacter = process.platform === 'win32' ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H';
 
 var pkgDir = '';
 var stdin = null;
@@ -94,6 +95,7 @@ function startScript(script, pkg, processes) {
     var inherit = null
     var legacyWatch = null
     var delay = null
+    var clearBuffer = null
     var verbose = null
 	  var runOnChangeOnly = null
 
@@ -105,6 +107,7 @@ function startScript(script, pkg, processes) {
       inherit = pkg.watch[script].inherit
       legacyWatch = pkg.watch[script].legacyWatch
       delay = pkg.watch[script].delay
+      clearBuffer = pkg.watch[script].clearBuffer
       verbose = pkg.watch[script].verbose
 	    runOnChangeOnly = pkg.watch[script].runOnChangeOnly
     } else {
@@ -140,6 +143,19 @@ function startScript(script, pkg, processes) {
       stdio: inherit === true ? ['pipe', 'inherit', 'pipe'] : 'pipe'
     })
     if (inherit === true) return;
+
+    if (clearBuffer === true) {
+      proc.stdout.pipe(
+        through(function(line, _, callback) {
+          line = line.toString();
+          if (line.match('restarting due to changes...')) {
+            stdin.stdout.write(clearCharacter);
+          }
+          callback()
+        })
+      )
+    }
+
     if (quiet === true || quiet === 'true') {
       proc.stdout.pipe(stdin.stdout)
       proc.stderr.pipe(stdin.stderr)
