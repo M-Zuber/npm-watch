@@ -160,6 +160,11 @@ Boolean to clear the buffer after detecting a new change
 
 Boolean to turn on the nodemons verbose mode
 
+#### `silent`
+
+Boolean to turn on nodemons silent (quiet) mode
+Silent was used as we already had an existing flag called quiet. This may change in a future release
+
 #### `Ignore files`
 
 Add an `ignore` property to your `watch` object. The value of `ignore` can be a string if you only want to ignore

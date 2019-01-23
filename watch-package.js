@@ -97,7 +97,8 @@ function startScript(script, pkg, processes) {
     var delay = null
     var clearBuffer = null
     var verbose = null
-	  var runOnChangeOnly = null
+    var runOnChangeOnly = null
+  var silent = null;
 
     if (typeof pkg.watch[script] === 'object' && !Array.isArray(pkg.watch[script])) {
       patterns = pkg.watch[script].patterns
@@ -109,11 +110,15 @@ function startScript(script, pkg, processes) {
       delay = pkg.watch[script].delay
       clearBuffer = pkg.watch[script].clearBuffer
       verbose = pkg.watch[script].verbose
-	    runOnChangeOnly = pkg.watch[script].runOnChangeOnly
+      runOnChangeOnly = pkg.watch[script].runOnChangeOnly
+      silent = pkg.watch[script].silent
     } else {
       patterns = pkg.watch[script]
     }
-
+    
+    if (verbose && silent) {
+      console.error('Silent and Verbose can not both be on')
+    }
     patterns = [].concat(patterns).map(function (pattern) {
       return ['--watch', pattern]
     }).reduce(function (a, b) {
@@ -134,6 +139,7 @@ function startScript(script, pkg, processes) {
     if (legacyWatch) { args = args.concat(['--legacy-watch']) }
     if (delay) { args = args.concat(['--delay', delay + 'ms']) }
     if (verbose) { args = args.concat(['-V']) }
+    if (silent) { args = args.concat(['-q']) }
 	  if (runOnChangeOnly) { args = args.concat(['--on-change-only']) }
     args = args.concat(['--exec', exec])
     
