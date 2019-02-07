@@ -8,26 +8,11 @@
     "through2": "^2.0.0"
   },
   "devDependencies": {
-    "crlf": "^1.1.0",
-    "markdown-code-blocks": "0.0.1",
-    "tape": "~2.3.2"
+    "crlf": "^1.1.0"
   },
   "bin": "./cli.js",
   "scripts": {
-    "demo": "markdown-code-blocks -t bash < README.md",
-    "exclusions": "bash -c echo 'An extension'",
     "prepublish": "crlf --set=LF cli.js watch-package.js"
-  },
-  "watch": {
-    "test": [
-      "watch-package.js",
-      "test/*.js"
-    ],
-    "exclusions": {
-      "patterns": "*",
-      "extensions": "nothing",
-      "ignore": "ignored.js"
-    }
   },
   "repository": {
     "type": "git",
