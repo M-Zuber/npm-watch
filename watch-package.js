@@ -133,7 +133,7 @@ function startScript(script, pkg, processes) {
       })
     }
 
-    var args = extensions ? ['--ext', extensions] : []
+    var args = extensions ? ['--ext', extensions] : ['--ext', '*']
     args = args.concat(patterns)
     if (ignores) { args = args.concat(ignores) }
     if (legacyWatch) { args = args.concat(['--legacy-watch']) }
