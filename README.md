@@ -122,6 +122,9 @@ EOF
 
 Tests run *perfectly*, ship it to the enterprise!
 
+Once you have the watcher running, you can force restart all tasks by entering `rs`.
+If you want to only force a single task, type the name of the key from the watch config (for example `rs test`).
+
 ### Options
 
 #### `patterns`

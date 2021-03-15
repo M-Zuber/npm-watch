@@ -30,18 +30,26 @@ module.exports = function watchPackage(_pkgDir, exit, taskName) {
   // send 'rs' commands to the right proc
   stdin = through(function (line, _, callback) {
     line = line.toString()
-    var match = line.match(/^rs\s+(\w+)/)
+    var match = line.match(/^rs\s*(.*)/)
     if (!match) {
       console.log('Unrecognized input:', line)
       return callback()
     }
-    var proc = processes[match[1]]
-    if (!proc) {
-      console.log('Couldn\'t find process:', match[1])
-      return callback()
+
+    if (match[1]) {
+      var proc = processes[match[1]]
+      if (!proc) {
+        console.log('Couldn\'t find process:', match[1])
+        return callback()
+      }
+      proc.stdin.write('rs\r\n')
+      return callback();
+    } else {
+      Object.keys(processes).forEach(function (key) {
+        processes[key].stdin.write('rs\r\n')
+      })
+      callback()
     }
-    proc.stdin.write('rs\n')
-    callback()
   })
 
   stdin.stderr = through()
