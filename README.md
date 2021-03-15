@@ -23,7 +23,7 @@ your `"scripts"`:
 }
 ```
 
-Possibilty to watch for different tasks
+There is the possibility to watch for different tasks
 
 ```javascript
   {
@@ -59,7 +59,7 @@ Also it is now possible to obtain a second parameter to define the script which 
 
 If you need to watch files with extensions other than those that `nodemon` watches [by default](https://github.com/remy/nodemon#specifying-extension-watch-list) (`.js`, `.coffee`, `.litcoffee`), you can set the value to an object with `patterns` and `extensions` keys. You can also add an `ignore` key (a list or a string) to ignore specific files. Finally, you can add a `quiet` flag to hide the script name in any output on stdout or stderr, or you can use the `inherit` flag to preserve the original's process stdout or stderr. You can enable `nodemon` [legacy watch](https://github.com/remy/nodemon#application-isnt-restarting) and specify the restart [delay](https://github.com/remy/nodemon#delaying-restarting) in milliseconds with the corresponding flags.
 
-> The `quiet` flag was changed from a `string` to a `boolean` in `0.1.5`. Backwards compatability will be kept for two patch versions.
+> The `quiet` flag was changed from a `string` to a `boolean` in `0.1.5`. Backwards compatibility will be kept for two patch versions.
 
 Use  `runOnChangeOnly` to set the nodemon option [--on-change-only](https://github.com/remy/nodemon/blob/master/doc/cli/options.txt "--on-change-only"). Setting this to `true` tells nodemon to execute script on change only, not startup.
 
@@ -127,45 +127,18 @@ Tests run *perfectly*, ship it to the enterprise!
 #### `patterns`
 
 Array of paths to watch
+```javascript
+"patterns": ["src", "test"]
+```
 
 #### `extensions`
 
-Array of file extensions to watch
+Comma delimited list of file extensions to watch
+```javascript
+"extensions": "js,jsx"
+```
 
 #### `ignore`
-
-String or array of paths to ignore
-
-#### `quiet`
-
-Boolean to hide the script name in any output on stdout and stderr
-
-#### `inherit`
-
-Boolean to preserve the original process' stdout and stderr
-
-#### `legacyWatch`
-
-Boolean to enable [legacy watch](https://github.com/remy/nodemon#application-isnt-restarting)
-
-#### `delay`
-
-Number of milliseconds to [delay](https://github.com/remy/nodemon#delaying-restarting) before checking for new files
-
-#### `clearBuffer`
-
-Boolean to clear the buffer after detecting a new change
-
-#### `verbose`
-
-Boolean to turn on the nodemons verbose mode
-
-#### `silent`
-
-Boolean to turn on nodemons silent (quiet) mode
-Silent was used as we already had an existing flag called quiet. This may change in a future release
-
-#### `Ignore files`
 
 Add an `ignore` property to your `watch` object. The value of `ignore` can be a string if you only want to ignore
 a single glob:
@@ -193,6 +166,57 @@ Or an array if you want to ignore multiple globs:
   }
   ...
 }
+```
+
+#### `quiet`
+
+Boolean to hide the script name in any output on stdout and stderr
+```javascript
+"quiet": false
+```
+
+#### `inherit`
+
+Boolean to preserve the original process' stdout and stderr
+```javascript
+"inherit": false
+```
+
+#### `legacyWatch`
+
+Boolean to enable [legacy watch](https://github.com/remy/nodemon#application-isnt-restarting)
+```javascript
+"legacyWatch": true
+```
+
+#### `delay`
+
+Number of milliseconds to [delay](https://github.com/remy/nodemon#delaying-restarting) before checking for new files
+```javascript
+"delay": 2500
+```
+
+#### `clearBuffer`
+
+Boolean to clear the buffer after detecting a new change
+```javascript
+"clearBuffer": true
+```
+
+#### `verbose`
+
+Boolean to turn on the nodemons verbose mode
+```javascript
+"verbose": true
+```
+
+#### `silent`
+
+Boolean to turn on nodemons silent (quiet) mode
+Silent was used as we already had an existing flag called quiet. This may change in a future release
+
+```javascript
+"silent": true
 ```
 
 ## Acknowledgements
