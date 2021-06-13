@@ -128,6 +128,17 @@ Tests run *perfectly*, ship it to the enterprise!
 Once you have the watcher running, you can force restart all tasks by entering `rs`.
 If you want to only force a single task, type the name of the key from the watch config (for example `rs test`).
 
+### Global Config
+
+#### `setMaxListeners`
+If too many listeners are added to an event emitter, [`node.js` will send a warning (rightfully so) about potential memory leaks](https://nodejs.org/docs/latest/api/events.html#events_emitter_setmaxlisteners_n).
+The default maximum is 10. If you need more than that, you can add a top level global config to your package.json
+```json
+"watchGlobalConfig": {
+    "setMaxListeners": true
+}
+```
+And max listeners will be set on the relevant processes to the minimum needed to avoid the warning.
 ### Options
 
 #### `patterns`

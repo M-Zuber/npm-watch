@@ -61,12 +61,17 @@ module.exports = function watchPackage(_pkgDir, exit, taskName) {
     }
     startScript(taskName, pkg, processes);
   } else {
-
+    // We only look for the global watch config here, since it is otherwise not relevant
+    var setMaxListeners = null;
+    if (typeof pkg.watchGlobalConfig === 'object') {
+      setMaxListeners = pkg.watchGlobalConfig.setMaxListeners
+    }
+    var scriptsCount = Object.keys(pkg.watch).length;
   Object.keys(pkg.watch).forEach(function (script) {
     if (!pkg.scripts[script]) {
       die('No such script "' + script + '"', 2)
     }
-    startScript(script, pkg, processes);
+    startScript(script, pkg, processes, setMaxListeners, scriptsCount + 1);
   })
   }
 
@@ -94,7 +99,7 @@ function prefixer(prefix) {
   })
 }
 
-function startScript(script, pkg, processes) {
+function startScript(script, pkg, processes, setMaxListeners,  scriptsCount) {
   var exec = [npm, 'run', '-s', script].join(' ')
     var patterns = null
     var extensions = null
@@ -148,7 +153,12 @@ function startScript(script, pkg, processes) {
     if (delay) { args = args.concat(['--delay', delay + 'ms']) }
     if (verbose) { args = args.concat(['-V']) }
     if (silent) { args = args.concat(['-q']) }
-	  if (runOnChangeOnly) { args = args.concat(['--on-change-only']) }
+    if (runOnChangeOnly) { args = args.concat(['--on-change-only']) }
+    if (setMaxListeners){
+      process.setMaxListeners(scriptsCount)
+      stdin.stdout.setMaxListeners(scriptsCount)
+      stdin.stderr.setMaxListeners(scriptsCount)
+    }
     args = args.concat(['--exec', exec])
     
     var proc = processes[script] = spawn(nodemon, args, {
