@@ -2,6 +2,9 @@
 
 Run scripts from package.json when files change.
 
+## Common Issues
+
+- `monorepo setups`: In a monorepo setup, `npm-watch` may fail with `ENOENT`. The solution is to have nodemon globally installed. [See here for more context](https://github.com/M-Zuber/npm-watch/issues/83)
 ## Synopsis
 
 Install it:
