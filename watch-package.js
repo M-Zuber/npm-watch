@@ -164,7 +164,7 @@ function startScript(script, pkg, processes, setMaxListeners,  scriptsCount) {
     var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,
       cwd: pkgDir,
-      stdio: inherit === true ? ['pipe', 'inherit', 'pipe'] : 'pipe'
+      stdio: inherit === true ? ['pipe', 'inherit', 'inherit'] : 'pipe'
     })
     if (inherit === true) return;
 
