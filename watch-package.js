@@ -78,7 +78,7 @@ module.exports = function watchPackage(_pkgDir, exit, taskName) {
   return stdin
 
   function die(message, code) {
-    process.stderr.write(message)
+    process.stderr.write(message + '\n')
 
     if (stdin) {
       stdin.end()
