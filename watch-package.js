@@ -5,9 +5,10 @@ var spawn = require('child_process').spawn
 
 var through = require('through2')
 
-var npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-var nodemon = process.platform === 'win32' ? 'nodemon.cmd' : 'nodemon';
-var clearCharacter = process.platform === 'win32' ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H';
+var isWindows = process.platform === 'win32';
+var npm = isWindows ? 'npm.cmd' : 'npm';
+var nodemon = isWindows ? 'nodemon.cmd' : 'nodemon';
+var clearCharacter = isWindows ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H';
 
 var pkgDir = '';
 var stdin = null;
@@ -100,7 +101,7 @@ function prefixer(prefix) {
 }
 
 function startScript(script, pkg, processes, setMaxListeners,  scriptsCount) {
-  var exec = [npm, 'run', '-s', script].join(' ')
+  var exec = [npm, 'run', '--silent', script].join(' ')
     var patterns = null
     var extensions = null
     var ignores = null
@@ -160,11 +161,13 @@ function startScript(script, pkg, processes, setMaxListeners,  scriptsCount) {
       stdin.stderr.setMaxListeners(scriptsCount)
     }
     args = args.concat(['--exec', exec])
-    
+
     var proc = processes[script] = spawn(nodemon, args, {
       env: process.env,
       cwd: pkgDir,
-      stdio: inherit === true ? ['pipe', 'inherit', 'inherit'] : 'pipe'
+      stdio: inherit === true ? ['pipe', 'inherit', 'inherit'] : 'pipe',
+      // https://github.com/nodejs/node/issues/52554
+      shell: isWindows
     })
     if (inherit === true) return;
 
